@@ -41,7 +41,7 @@ class Generator:
         
         # generate files
         self._pre_run()
-        self._generate_repo_files()
+        #self._generate_repo_files()
         self._generate_addons_file()
         self._generate_md5_file()
         self._generate_zip_files()
