@@ -42,9 +42,9 @@ class Generator:
         # generate files
         self._pre_run()
         #self._generate_repo_files()
-        self._generate_addons_file()
         self._generate_md5_file()
         self._generate_zip_files()
+        self._generate_addons_file()
         # notify user
         print "Finished updating addons xml, md5 files and zipping addons"
         
@@ -170,11 +170,22 @@ class Generator:
         addons_xml = u"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<addons>\n"
         # loop thru and add each addons addon.xml file
         for addon in addons:
-            addon=addon.strip()
-            # create path
-            _path = os.path.join( addon, "addon.xml" )
+            addon=addon.strip()    
+            try:
+                # skip any file or .git folder
+                if ( not os.path.isdir( addon ) or addon == ".git" or addon == self.output_path or addon == self.tools_path): continue
+                # create path
+                _path = os.path.join( addon, "addon.xml" )
+                # split lines for stripping
+                document = minidom.parse(_path)
+                for parent in document.getElementsByTagName("addon"):
+                    addonid = parent.getAttribute("id")
+                if os.path.exists(self.output_path + addonid):
+                	_path = os.path.join( self.output_path + addonid, "addon.xml" )
+            except Exception, e:
+                print e
             #skip path if it has no addon.xml
-            if not os.path.isfile( _path ): continue
+            if not os.path.isfile( _path ): continue   
             try:               
                 # split lines for stripping
                 xml_lines = open( _path, "r" ).read().splitlines()
